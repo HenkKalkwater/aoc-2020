@@ -1,0 +1,5 @@
+name "aoc-2020"
+description "Advent of Code 2020"
+authors "Chris Josten"
+copyright "Copyright © 2020, Chris Josten"
+license "MIT"
