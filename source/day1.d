@@ -3,20 +3,25 @@ import std.array;
 import std.conv;
 import std.exception;
 import std.format;
+import std.functional;
 import std.range;
 import std.stdio;
+
+import dayutil;
 
 immutable string progName = "aoc-2020";
 
 void run(string[] args) {
-	enforce(args.length == 1, "Please provide a part to run %s 1 [part]".format(progName));
-	int part = to!int(args[0]);
-	enforce(part > 0 &&  part <= 2, "Parts %d to %d supported".format(1, 2));
 
+	/* For each line on stdin, copy it, map it to an integer and sort it.
+	   Sorting a range makes it a SortedRange and functions like contains(range, elem)
+       will make use of optimised implementations, in the case of contains(range, elem)
+	   it will use a binary search instead of a linear search */
 	auto numbers = stdin.byLineCopy.map!(a => to!int(a)).array.sort;
 
-	auto fun = part == 1 ? &part1 : &part2;
-	writeln(fun(numbers));
+	int solution = parts!int(args, partial!(part1, numbers), partial!(part2, numbers));
+	enforce(solution >= 0, "No solutions found");
+	writeln(solution);
 }
 
 int part1(SortedRange!(int[]) numbers) {
