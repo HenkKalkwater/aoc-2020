@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/aoc-2020
+aoc-2020.so
+aoc-2020.dylib
+aoc-2020.dll
+aoc-2020.a
+aoc-2020.lib
+aoc-2020-test-*
+*.exe
+*.o
+*.obj
+*.lst
