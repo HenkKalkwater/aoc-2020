@@ -15,7 +15,7 @@ void run(string[] args) {
 
 	/* For each line on stdin, copy it, map it to an integer and sort it.
 	   Sorting a range makes it a SortedRange and functions like contains(range, elem)
-       will make use of optimised implementations, in the case of contains(range, elem)
+	   will make use of optimised implementations, in the case of contains(range, elem)
 	   it will use a binary search instead of a linear search */
 	auto numbers = stdin.byLineCopy.map!(a => to!int(a)).array.sort;
 

@@ -6,12 +6,14 @@ import std.stdio;
 import std.getopt;
 
 import day1;
+import day2;
 import dayutil;
 
 immutable string progName = "aoc-2020";
 
 void function(string[])[] programs = [
-	&day1.run
+	&day1.run,
+	&day2.run
 ];
 
 void printUsage(string name) {
