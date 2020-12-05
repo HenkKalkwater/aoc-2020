@@ -1,6 +1,7 @@
 import core.stdc.stdlib;
 
 import std.conv;
+import std.exception;
 import std.format;
 import std.stdio;
 import std.getopt;
@@ -28,7 +29,10 @@ void printUsage(string name) {
 }
 
 void printUsage(string name, string message) {
-	stderr.writeln("USAGE: %s [day] [part]".format(name));
+	stderr.writeln("USAGE: %s [DAY] [PART] <INPUT_FILE> ".format(name));
+	stderr.writeln("       DAY        = int between 1 and 25 (inclusive), specifiying the day to run");
+	stderr.writeln("       PART       = int between 1 and 2  (inclusive), specifiying the part to run");
+	stderr.writeln("       INPUT_FILE = file to read from. '-' or missing implies stdin");
 	if (message != null) {
 		stderr.writeln(message);
 	}
@@ -56,9 +60,20 @@ void main(string[] args) {
 	} catch (ConvException e) {
 		printUsage(args[0], "[part] is not an integer");
 	}
+
+	File file;
+	if (args.length < 4 || args[3] == "-") {
+		file = stdin;
+	} else {
+		try {
+			file = File(args[3], "rb");
+		} catch (ErrnoException e) {
+			printUsage(args[0], "Error %d while opening input file: %s".format(e.errno, e.message));
+		}
+	}
 	
 	try {
-		Variant result = programs[day - 1](part, stdin, args[3..$]);
+		Variant result = programs[day - 1](part, file, args[3..$]);
 		writeln(result);
 	} catch(ArgumentException e) {
 		printUsage(args[0], e.msg);
