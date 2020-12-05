@@ -2,15 +2,16 @@ import std.algorithm;
 import std.format;
 import std.functional;
 import std.stdio;
-
+import std.variant;
 
 import dayutil;
 
-void run(string[] args) {
-	ulong count = parts!ulong(args,
-			() => stdin.byLine.count!(l => isPasswordValid1(l)),
-			() => stdin.byLine.count!(l => isPasswordValid2(l)));
-	writeln(count);
+Variant run(int day, File input, string[] args) {
+	auto lines = input.byLine;
+	Variant count = parts!ulong(day,
+			() => lines.count!(l => isPasswordValid1(l)),
+			() => lines.count!(l => isPasswordValid2(l)));
+	return count;
 }
 
 /// Part 1

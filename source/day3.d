@@ -5,18 +5,18 @@ import std.range;
 import std.stdio;
 import std.traits;
 import std.uni;
+import std.variant;
 
 import dayutil;
 
-void run(string[] args) {
-	auto input = stdin.byLineCopy.array;
-	ulong count = parts!ulong(args,
-			() => input.countTrees1,
+Variant run(int part, File input, string[] args) {
+	auto inputData = stdin.byLineCopy.array;
+	Variant count = parts!size_t(part,
+			() => inputData.countTrees1,
 			() => [[1,1], [3,1], [5,1], [7,1], [1,2]]
-				.map!(x => input.save.enumerate.countTrees2(x[0], x[1]))
+				.map!(x => inputData.save.enumerate.countTrees2(x[0], x[1]))
 				.fold!((x, y) => x * y));
-
-	writeln(count);
+	return count;
 }
 
 ulong countTrees1(Range)(Range lines) if (isInputRange!Range && isSomeString!(ElementType!Range)) {

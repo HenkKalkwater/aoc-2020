@@ -4,6 +4,7 @@ import std.functional;
 import std.range;
 import std.stdio;
 import std.traits;
+import std.variant;
 
 import dayutil;
 
@@ -46,12 +47,12 @@ struct Passport {
 			&& eyeColour.length > 0 && passwordId.length > 0;
 	}
 }
-void run(string[] args) {
-	auto lines = stdin.byLineCopy.array;
-	size_t result = parts!size_t(args, 
+Variant run(int part, File input, string[] args) {
+	auto lines = input.byLineCopy.array;
+	Variant result = parts!size_t(part, 
 			() => part1(lines),
 			() => part2(lines));
-	writeln(result);
+	return result;
 }
 
 size_t part1(Range)(Range range) if (isInputRange!Range) {

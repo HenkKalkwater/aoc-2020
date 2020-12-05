@@ -13,17 +13,12 @@ class ArgumentException : Exception{
    goes out bounds.
  *
  * Params:
- *     args = Reference to string with arguments, usually from main.
+ *     part = The part to run.
  *     dgs = list of delegates. Which one will be called depends on args[0]
  */
-R parts(R)(ref string[] args, R delegate()[] dgs ...) {
+R parts(R)(int part, R delegate()[] dgs ...) {
 	ulong len = dgs.length;
-	enforce!ArgumentException(args.length >= 1, "Please provide a part to run as a command line argument");
-	int part = to!int(args[0]);
 	enforce!ArgumentException(part > 0 &&  part <= len, "This day supports parts %d to %d".format(1, len));
-
-	// Remove the first argument
-	args = args[1..$];
 	
 	return dgs[part - 1]();
 }

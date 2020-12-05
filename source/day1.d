@@ -6,22 +6,23 @@ import std.format;
 import std.functional;
 import std.range;
 import std.stdio;
+import std.variant;
 
 import dayutil;
 
 immutable string progName = "aoc-2020";
 
-void run(string[] args) {
+Variant run(int part, File input, string[] args) {
 
 	/* For each line on stdin, copy it, map it to an integer and sort it.
 	   Sorting a range makes it a SortedRange and functions like contains(range, elem)
 	   will make use of optimised implementations, in the case of contains(range, elem)
 	   it will use a binary search instead of a linear search */
-	auto numbers = stdin.byLineCopy.map!(a => to!int(a)).array.sort;
+	auto numbers = input.byLineCopy.map!(a => to!int(a)).array.sort;
 
-	int solution = parts!int(args, partial!(part1, numbers), partial!(part2, numbers));
+	Variant solution = parts!int(part, partial!(part1, numbers), partial!(part2, numbers));
 	enforce(solution >= 0, "No solutions found");
-	writeln(solution);
+	return solution;
 }
 
 int part1(SortedRange!(int[]) numbers) {

@@ -4,20 +4,23 @@ import std.conv;
 import std.format;
 import std.stdio;
 import std.getopt;
+import std.variant;
 
 import day1;
 import day2;
 import day3;
 import day4;
+import day5;
 import dayutil;
 
 immutable string progName = "aoc-2020";
 
-void function(string[])[] programs = [
+Variant function(int, File, string[])[] programs = [
 	&day1.run,
 	&day2.run,
 	&day3.run,
 	&day4.run,
+	&day5.run,
 ];
 
 void printUsage(string name) {
@@ -34,7 +37,7 @@ void printUsage(string name, string message) {
 
 void main(string[] args) {
 	int day;
-	if (args.length < 2) {
+	if (args.length < 3) {
 		printUsage(args[0]);
 	}
 	try {
@@ -47,9 +50,16 @@ void main(string[] args) {
 		printUsage(args[0], "[day] must be between 1 and %d".format(programs.length - 1));
 	}
 
+	int part;
+	try {
+		part = to!int(args[2]);
+	} catch (ConvException e) {
+		printUsage(args[0], "[part] is not an integer");
+	}
 	
 	try {
-		programs[day - 1](args[2..$]);
+		Variant result = programs[day - 1](part, stdin, args[3..$]);
+		writeln(result);
 	} catch(ArgumentException e) {
 		printUsage(args[0], e.msg);
 	} 
