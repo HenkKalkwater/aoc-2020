@@ -10,13 +10,27 @@ import dayutil;
 
 Variant run(int part, File file, string[] args) {
 	auto lines = file.byLine;
+	auto seats = lines.map!(x => determineSeat(to!string(x.array)));
 	Variant result = parts!int(part, 
-			() => part1(lines));
+			() => part1(seats),
+			() => part2(seats.array));
 	return result;
 }
 
 int part1(Range)(Range range) if (isInputRange!Range) {
-	return range.map!(x => determineSeat(to!string(x.array))).maxElement;
+	return range.maxElement;
+}
+
+int part2(Range)(Range range) if (isRandomAccessRange!Range && is(ElementType!Range == int)) {
+	auto window = range.sort[8..$-8].slide(2);
+	int missing = -1;
+	foreach(seat; window) {
+		if (seat[0] + 1 != seat[1]) {
+			missing = seat[0] + 1;
+			break;
+		}
+	}
+	return missing;
 }
 
 int determineSeat(string code) {
