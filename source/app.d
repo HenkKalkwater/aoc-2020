@@ -12,6 +12,7 @@ import day2;
 import day3;
 import day4;
 import day5;
+import day6;
 import dayutil;
 
 immutable string progName = "aoc-2020";
@@ -22,6 +23,7 @@ Variant function(int, File, string[])[] programs = [
 	&day3.run,
 	&day4.run,
 	&day5.run,
+	&day6.run,
 ];
 
 void printUsage(string name) {
@@ -51,7 +53,7 @@ void main(string[] args) {
 	}
 
 	if (day <= 0 || day > programs.length) {
-		printUsage(args[0], "[day] must be between 1 and %d".format(programs.length - 1));
+		printUsage(args[0], "[day] must be between 1 and %d".format(programs.length));
 	}
 
 	int part;
