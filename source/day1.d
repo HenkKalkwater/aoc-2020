@@ -43,7 +43,7 @@ int part1(SortedRange!(int[]) numbers, int target) {
 
 unittest {
 	auto numbers = [1721, 979, 366, 299, 675, 1456].sort;
-	assert(part1(numbers) == 514579);
+	assert(part1(numbers, 2020) == 514579);
 }
 
 int part2(SortedRange!(int[]) numbers, int target) {
@@ -63,5 +63,5 @@ exit:
 
 unittest {
 	auto numbers = [1721, 979, 366, 299, 675, 1456].sort;
-	assert(part2(numbers) == 241861950);
+	assert(part2(numbers, 2020) == 241861950);
 }
