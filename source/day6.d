@@ -8,7 +8,7 @@ import std.variant;
 
 import dayutil;
 
-Variant run(int part, File file, string[] args) {
+Variant run(int part, File file, bool bigboy, string[] args) {
 	auto lines = file.byLineCopy.array;
 	Variant result = parts!size_t(part,
 			() => part1(lines),

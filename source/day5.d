@@ -8,7 +8,7 @@ import std.variant;
 
 import dayutil;
 
-Variant run(int part, File file, string[] args) {
+Variant run(int part, File file, bool bigboy, string[] args) {
 	auto lines = file.byLine;
 	auto seats = lines.map!(x => determineSeat(to!string(x.array)));
 	Variant result = parts!int(part, 

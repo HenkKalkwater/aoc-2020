@@ -6,7 +6,7 @@ import std.variant;
 
 import dayutil;
 
-Variant run(int day, File input, string[] args) {
+Variant run(int day, File input, bool bigboy, string[] args) {
 	auto lines = input.byLine;
 	Variant count = parts!ulong(day,
 			() => lines.count!(l => isPasswordValid1(l)),

@@ -17,7 +17,7 @@ import dayutil;
 
 immutable string progName = "aoc-2020";
 
-Variant function(int, File, string[])[] programs = [
+Variant function(int, File, bool, string[])[] programs = [
 	&day1.run,
 	&day2.run,
 	&day3.run,
@@ -42,7 +42,10 @@ void printUsage(string name, string message) {
 }
 
 void main(string[] args) {
+	bool bigboy = false;
 	int day;
+	getopt(args,
+			"bigboy", "Execute the so-named 'biboy' variant of this exercise", &bigboy);
 	if (args.length < 3) {
 		printUsage(args[0]);
 	}
@@ -75,7 +78,7 @@ void main(string[] args) {
 	}
 	
 	try {
-		Variant result = programs[day - 1](part, file, args[3..$]);
+		Variant result = programs[day - 1](part, file, bigboy, args[3..$]);
 		writeln(result);
 	} catch(ArgumentException e) {
 		printUsage(args[0], e.msg);

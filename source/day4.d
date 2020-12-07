@@ -47,7 +47,7 @@ struct Passport {
 			&& eyeColour.length > 0 && passwordId.length > 0;
 	}
 }
-Variant run(int part, File input, string[] args) {
+Variant run(int part, File input, bool bigboy, string[] args) {
 	auto lines = input.byLineCopy.array;
 	Variant result = parts!size_t(part, 
 			() => part1(lines),
