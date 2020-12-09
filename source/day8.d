@@ -61,7 +61,6 @@ int part1(ref Instruction[] instrs) {
 
 	while(!visited.canFind(pc)) {
 		Instruction curInstr = instrs[pc];
-		writeln(pc, curInstr);
 		visited ~= [pc];
 		switch(curInstr.memomic) {
 		case Memomic.NOP:
@@ -105,7 +104,6 @@ int part2(ref Instruction[] instrs) {
 
 		while(!visited.canFind(pc)) {
 			Instruction curInstr = instrs[pc];
-			writeln(pc, curInstr);
 			visited ~= [pc];
 			switch(curInstr.memomic) {
 			case Memomic.NOP:
