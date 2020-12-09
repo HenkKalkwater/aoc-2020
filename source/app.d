@@ -15,6 +15,7 @@ import day5;
 import day6;
 import day7;
 import day8;
+import day9;
 import dayutil;
 
 immutable string progName = "aoc-2020";
@@ -28,6 +29,7 @@ Variant function(int, File, bool, string[])[] programs = [
 	&day6.run,
 	&day7.run,
 	&day8.run,
+	&day9.run,
 ];
 
 void printUsage(string name) {
@@ -71,14 +73,20 @@ void main(string[] args) {
 	}
 
 	File file;
-	if (args.length < 4 || args[3] == "-") {
-		file = stdin;
-	} else {
-		try {
+	try {
+		if (args.length < 4)  {
+			if (bigboy) {
+				file = File("in/bigboy/%d.txt".format(day), "rb");
+			} else {
+				file = File("in/%d.txt".format(day), "rb");
+			}
+		} else if(args[3] == "-") {
+			file = stdin;
+		} else {
 			file = File(args[3], "rb");
-		} catch (ErrnoException e) {
-			printUsage(args[0], "Error %d while opening input file: %s".format(e.errno, e.message));
 		}
+	} catch (ErrnoException e) {
+		printUsage(args[0], "Error %d while opening input file: %s".format(e.errno, e.message));
 	}
 	
 	try {
