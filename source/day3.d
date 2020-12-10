@@ -10,7 +10,7 @@ import std.variant;
 import dayutil;
 
 Variant run(int part, File input, bool bigboy, string[] args) {
-	auto inputData = stdin.byLineCopy.array;
+	auto inputData = input.byLineCopy.array;
 	Variant count = parts!size_t(part,
 			() => inputData.countTrees1,
 			() => [[1,1], [3,1], [5,1], [7,1], [1,2]]

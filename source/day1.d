@@ -19,7 +19,8 @@ Variant run(int part, File input, bool bigboy, string[] args) {
 	   will make use of optimised implementations, in the case of contains(range, elem)
 	   it will use a binary search instead of a linear search */
 	auto numbers = input.byLineCopy.map!(a => to!int(a)).array.sort;
-	int target = bigboy ? 99920044 : 2020;
+	int target = 2020;
+	if(bigboy) target = 2020;
 
 	Variant solution = parts!int(part, 
 			() => part1(numbers, target), 
