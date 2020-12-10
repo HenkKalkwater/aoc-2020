@@ -12,7 +12,8 @@ Variant run(int part, File input, bool bigboy, string[] args) {
 	auto sortedNumbers = numbers.sort;
 
 	Variant result = parts!size_t(part,
-			() => part1(sortedNumbers));
+			() => part1(sortedNumbers),
+			() => part2(sortedNumbers));
 	return result;
 }
 
@@ -35,4 +36,27 @@ unittest {
 		 25, 35, 8, 17, 7, 9, 4, 2, 34, 10, 3];
 	numbers ~= [0u];
 	assert(part1(numbers.sort) == 220);
+}
+
+size_t part2(T)(SortedRange!(T[]) numbers) {
+	auto numbers2 = merge(numbers, [numbers[$ - 1] + 3]).array;
+	size_t[] options;
+	options.length = numbers2[$ -1] + 1;
+	fill(options, 0);
+	options[0] = 1;
+	
+	foreach(int number; numbers2) {
+		foreach(int diff; 1..4) {
+			if ((number - diff) >= 0) options[number] += options[number - diff];
+		}
+	}
+
+	size_t result = options[$ - 1];
+	return result;
+}
+unittest {
+	uint[] numbers = [28, 33, 18, 42, 31, 14, 46, 20, 48, 47, 24, 23, 49, 45, 19, 38, 39, 11, 1, 32, 
+		 25, 35, 8, 17, 7, 9, 4, 2, 34, 10, 3];
+	numbers ~= [0u];
+	assert(part2(numbers.sort) == 19208);
 }
