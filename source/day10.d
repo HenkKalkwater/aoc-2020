@@ -27,7 +27,6 @@ size_t part1(T)(SortedRange!(T[]) numbers) {
 	}
 	// Device adapter is always rated 3 volts higher
 	gap3++;
-	writeln(gap1, ", ", gap3);
 	return gap1 * gap3;
 }
 
