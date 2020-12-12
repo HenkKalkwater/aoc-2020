@@ -1,3 +1,11 @@
+public import std.array;
+public import std.algorithm;
+public import std.range;
+public import std.string;
+public import std.stdio;
+public import std.traits;
+public import std.variant;
+
 import std.conv;
 import std.exception;
 import std.format;
