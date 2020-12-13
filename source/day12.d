@@ -18,7 +18,8 @@ struct Move {
 Variant run(int part, File input, bool bigboy, string[] args) {
 	auto parsedInput = parseInput(input.byLine);
 	return Variant(parts!int(part,
-				() => part1(parsedInput)));
+				() => part1(parsedInput),
+				() => part2(parsedInput)));
 }
 
 auto parseInput(Range)(Range range) if (isInputRange!Range && isSomeString!(ElementType!Range)) {
@@ -57,6 +58,12 @@ auto parseInput(Range)(Range range) if (isInputRange!Range && isSomeString!(Elem
 	});
 }
 
+int betterModulus(int number, int divisor) pure {
+	int tmp = number % divisor;
+	if (tmp < 0) tmp += divisor;
+	return tmp;
+}
+
 int part1(Range)(Range range) if (isInputRange!Range && is(ElementType!Range == Move)) {
 	int x, y;
 	Direction direction = Direction.EAST;
@@ -81,14 +88,8 @@ int part1(Range)(Range range) if (isInputRange!Range && is(ElementType!Range == 
 		}
 	}
 
-	int betterModulus(int number, int divisor) pure {
-		int tmp = number % divisor;
-		if (tmp < 0) tmp += divisor;
-		return tmp;
-	}
-
 	foreach(move; range) {
-		writefln("Facing %s (%d,%d)", direction, x, y);
+		//writefln("Facing %s (%d,%d)", direction, x, y);
 		final switch(move.direction) {
 		case Direction.NORTH:
 		case Direction.SOUTH:
@@ -111,6 +112,80 @@ int part1(Range)(Range range) if (isInputRange!Range && is(ElementType!Range == 
 	import std.math;
 	return abs(x) + abs(y);
 }
+int part2(Range)(Range range) if (isInputRange!Range && is(ElementType!Range == Move)) {
+	int waypointX = 10;
+	int waypointY = 1;
+	int x, y;
+
+	foreach(move; range) {
+		//writefln("Ship (%d,%d), waypoint (%d,%d)", x, y, waypointX, waypointY);
+		final switch(move.direction) {
+		case Direction.NORTH:
+			waypointY += move.amount;
+			break;
+		case Direction.SOUTH:
+			waypointY -= move.amount;
+			break;
+		case Direction.WEST:
+			waypointX -= move.amount;
+			break;
+		case Direction.EAST:
+			waypointX += move.amount;
+			break;
+		case Direction.LEFT:
+			int direction = betterModulus(move.amount / 90, 4);
+			switch(direction) {
+			case 0:
+				break;
+			case 1:
+				int tmp = waypointY;
+				waypointY = waypointX;
+				waypointX = -tmp;
+				break;
+			case 2:
+				waypointY = -waypointY;
+				waypointX = -waypointX;
+				break;
+			case 3:
+				int tmp = waypointY;
+				waypointY = -waypointX;
+				waypointX = tmp;
+				break;
+			default: assert("Modulus went out of bounds");
+			}
+			break;
+		case Direction.RIGHT:
+			int direction = betterModulus(move.amount / 90, 4);
+			switch(direction) {
+			case 0:
+				break;
+			case 1:
+				int tmp = waypointY;
+				waypointY = -waypointX;
+				waypointX = tmp;
+				break;
+			case 2:
+				waypointY = -waypointY;
+				waypointX = -waypointX;
+				break;
+			case 3:
+				int tmp = waypointY;
+				waypointY = waypointX;
+				waypointX = -tmp;
+				break;
+			default: assert("Modulus went out of bounds");
+			}
+			break;
+		case Direction.FORWARD:
+			x += waypointX * move.amount;
+			y += waypointY * move.amount;
+			break;
+		}
+	}
+
+	import std.math;
+	return abs(x) + abs(y);
+}
 
 unittest {
 	string input = q"EOS
@@ -122,4 +197,5 @@ F11
 EOS";
 
 	assert(parseInput(input.lineSplitter).part1() == 25);
+	assert(parseInput(input.lineSplitter).part2() == 286);
 }
