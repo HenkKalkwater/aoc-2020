@@ -21,6 +21,7 @@ import day10;
 import day11;
 import day12;
 import day13;
+import day14;
 import dayutil;
 
 immutable string progName = "aoc-2020";
@@ -43,6 +44,7 @@ Variant function(int, File, bool, string[])[] programs = [
 	&day11.run,
 	&day12.run,
 	&day13.run,
+	&day14.run,
 ];
 
 void printUsage(string message = null) {

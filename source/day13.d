@@ -87,7 +87,6 @@ long part2(ParsedInput input) {
 		for(; (time + bus.index) % bus.value != 0; time += step) {}
 		step *= bus.value;
 	}
-	writeln(time);
 	return time;
 }
 
