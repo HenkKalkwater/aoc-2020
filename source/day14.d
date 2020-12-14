@@ -1,3 +1,4 @@
+import std.bitmanip;
 import std.conv;
 
 import dayutil;
@@ -87,27 +88,27 @@ long part1(Instruction[] instructions) {
 	Value[] bitmask;
 	long[long] memory;
 	foreach(instruction; instructions) {
-	final switch(instruction.op) {
-		case Operation.WRITE_BITMASK:
-			bitmask = instruction.value;
-			break;
-		case Operation.WRITE_MEM:
-			Value[] tmp = instruction.value;
-			foreach(ref bit, mask; lockstep(tmp.retro, bitmask.retro)) {
-				final switch(mask) {
-					case Value.ZERO:
-						bit = Value.ZERO;
-						break;
-					case Value.ONE:
-						bit = Value.ONE;
-						break;
-					case Value.X: break;
+		final switch(instruction.op) {
+			case Operation.WRITE_BITMASK:
+				bitmask = instruction.value;
+				break;
+			case Operation.WRITE_MEM:
+				Value[] tmp = instruction.value;
+				foreach(ref bit, mask; lockstep(tmp.retro, bitmask.retro)) {
+					final switch(mask) {
+						case Value.ZERO:
+							bit = Value.ZERO;
+							break;
+						case Value.ONE:
+							bit = Value.ONE;
+							break;
+						case Value.X: break;
+					}
 				}
-			}
-			//writeln(tmp);
-			memory[instruction.address] = fromStupidBinary(tmp);
-			break;
-	}
+				//writeln(tmp);
+				memory[instruction.address] = fromStupidBinary(tmp);
+				break;
+		}
 	}
 	long sum = 0;
 	foreach(e; memory.byValue()) {
@@ -117,20 +118,88 @@ long part1(Instruction[] instructions) {
 	return sum;
 }
 
-int part2(Range)(Range range) if (isInputRange!Range) {
-	
-	return 0;
-}
-
 unittest {
-string input = q"EOS
+	string input = q"EOS
 mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X
 mem[8] = 11
 mem[7] = 101
 mem[8] = 0
 EOS";
 	auto parsed = parseInput(input.lineSplitter);
+	assert(part1(parsed) == 165);
+}
+
+long[] addressPermutations(Value[] address) {
+	import std.math;
+	long[] addresses;
+	addresses ~= [0];
+	addresses.reserve(pow(2, addresses.count(Value.X)));
+
+	foreach(idx, bit; address.retro.enumerate) {
+		if (bit == Value.X) {
+			auto duplicate  = addresses.dup;
+			foreach(ref address2; duplicate) {
+				address2 += (cast(long) 1 << idx);
+			}
+			addresses ~= duplicate;
+
+		} else if (bit == Value.ONE) {
+			foreach(ref address2; addresses) {
+				address2 += (cast(long) 1 << idx);
+			}
+		}
+	}
+	writeln(address);
+	foreach(address2; addresses) {
+		writeln("Address: %064b".format(address2));
+	}
+	assert(addresses.length == pow(2, address.count(Value.X)));
+	assert(addresses.uniq.array.length == addresses.length);
+	return addresses;
+}
+
+long part2(Instruction[] instructions) {
+	Value[] bitmask;
+	long[long] memory;
+	foreach(instruction; instructions) {
+		final switch(instruction.op) {
+			case Operation.WRITE_BITMASK:
+				bitmask = instruction.value;
+				break;
+			case Operation.WRITE_MEM:
+				Value[] tmp = toStupidBinary(instruction.address);
+				foreach(ref bit, mask; lockstep(tmp, bitmask)) {
+					final switch(mask) {
+						case Value.ZERO: break;
+						case Value.ONE:
+							bit = Value.ONE;
+							break;
+						case Value.X: 
+							bit = Value.X;
+							break;
+					}
+				}
+				//writeln(tmp);
+				foreach(long address; addressPermutations(tmp)) {
+					//writeln("Writing to address ", address);
+					memory[address] = fromStupidBinary(instruction.value);
+				}
+				break;
+		}
+	}
+
+	return memory.byValue().sum;
+}
+
+unittest {
+	string input = q"EOS
+mask = 000000000000000000000000000000X1001X
+mem[42] = 100
+mask = 00000000000000000000000000000000X0XX
+mem[26] = 1
+EOS";
+	auto parsed = parseInput(input.lineSplitter);
 	writeln(parsed);
-	writeln(part1(parsed.save));
-	assert(part1(parsed.save) == 165);
+	assert(part2(parsed) == 208);
+
 }
