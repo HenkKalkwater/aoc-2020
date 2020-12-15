@@ -24,7 +24,6 @@ struct Instruction {
 
 Variant run(int part, File input, bool bigboy, string[] args) {
 	auto parsed = input.byLineCopy.parseInput;
-	writeln(parsed);
 
 	return Variant(parts!long(part,
 				() => part1(parsed),
@@ -149,9 +148,9 @@ long[] addressPermutations(Value[] address) {
 			}
 		}
 	}
-	writeln(address);
+	// debug writeln(address);
 	foreach(address2; addresses) {
-		writeln("Address: %064b".format(address2));
+		// debug writeln("Address: %064b".format(address2));
 	}
 	assert(addresses.length == pow(2, address.count(Value.X)));
 	assert(addresses.uniq.array.length == addresses.length);
@@ -199,7 +198,5 @@ mask = 00000000000000000000000000000000X0XX
 mem[26] = 1
 EOS";
 	auto parsed = parseInput(input.lineSplitter);
-	writeln(parsed);
 	assert(part2(parsed) == 208);
-
 }

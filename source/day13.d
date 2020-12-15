@@ -30,7 +30,7 @@ long part1(ParsedInput input) {
 	long earliestBusTimestamp = long.max;
 	foreach(long bus; input.busses.filter!(x => x != -1)) {
 		long closestTimestamp = (input.timestamp / bus + 1 ) * bus;
-		writeln(closestTimestamp);
+		//writeln(closestTimestamp);
 		if (closestTimestamp < earliestBusTimestamp) {
 			earliestBusTimestamp = closestTimestamp;
 			earliestBus = bus;
