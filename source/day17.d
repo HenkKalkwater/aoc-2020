@@ -3,8 +3,11 @@ import std.format;
 import dayutil;
 version(unittest) import fluent.asserts;
 
-immutable char[26] letters = "xyzabcdefghijklmnopqrstuvw";
+immutable char[26] letters = "xyzwvutsrqpomnlkjihgfedcba";
 
+/**
+ * A point with 'dim' dimensions.
+ */ 
 struct Point(size_t dim) {
 	int[dim] elements;
 
@@ -12,7 +15,7 @@ struct Point(size_t dim) {
 		return elements[index];
 	}
 
-	void opIndexAssign(size_t index, int value) {
+	void opIndexAssign(T : int) (T value, size_t index) {
 		elements[index] = value;
 	}
 
@@ -20,6 +23,7 @@ struct Point(size_t dim) {
 		mixin("@property int %s() const { return elements[%d]; }".format(name, index));
 		mixin("@property void %s(int newValue) { elements[%d] = newValue; }".format(name, index));
 	}
+
 	static foreach(i; 0..dim) {
 		mixin element!([letters[i]], i);
 	}
@@ -29,6 +33,21 @@ struct Point(size_t dim) {
 			elements[idx] = arg;
 		}
 	}
+}
+
+///
+unittest {
+	Point!4 p = Point!4(5,2,3);
+	p.x.should.equal(p[0]);
+	p.x.should.equal(5);
+
+	p.x = 9;
+	p[0].should.equal(9);
+
+	p[0] = 1;
+	p.x.should.equal(1);
+
+	assert(p.w == 0);
 }
 
 Variant run(int part, File input, bool bigboy, string[] args) {
@@ -123,10 +142,16 @@ int part1(bool[Point!3] start){
 	return cast(int) prev.byValue.count!((x) => x);
 }
 
+/*
+ * Generates code for the nested loops within part2
+ * Params:
+ *     dim: The amount of dimensions the pocket dimensions has
+ * Returns: the generated code as a string
+ */
 string GenLoops(size_t dim)() {
-	string code = "";
-	string xyz = "";
-	string dxyz = "";
+	string code = ""; // The generated code
+	string xyz = ""; // Generates the string x, y, z, w, ...
+	string dxyz = ""; // Genereates the string dx, dy, dz, dw, ...
 	static foreach(j; 0..dim) {
 		xyz ~= [letters[j]];
 		dxyz ~= "d" ~ [letters[j]];
@@ -137,17 +162,19 @@ string GenLoops(size_t dim)() {
 		}
 	}
 
+	// Generate outer loop to go over each point
 	static foreach(j; 0..dim) {
-
 		code ~= "foreach(%1$s; min[%2$s]..max[%2$s]) {\n".format(letters[j], j);
 	}
 	code ~= "bool active = prev.get(DPoint(" ~ xyz ~ "), false);\n";
 	code ~= "int neighboursActive = 0;\n";
 
+	// Generate code to loop over the neighbours
 	static foreach(j; 0..dim) {
 		code ~= "foreach(d%1$s; %1$s-1..%1$s+2) {\n".format(letters[j]);
 	}
 
+	// Skip if the current coördinate is not a neighbour, but our current node itself.
 	code ~= "if (";
 	static foreach(j; 0..dim) {
 		code ~= "%1s == d%1$s".format(letters[j]);
@@ -155,17 +182,22 @@ string GenLoops(size_t dim)() {
 	}
 	code ~= ") continue;\n";
 
+	// Increment the activeNeighbours count if the neighbour we're visiting is active
 	code ~= "if (prev.get(DPoint(" ~ dxyz ~ "), false)) neighboursActive++;\n";
+
+	// Generate closing brackers for the inner loop
 	static foreach(j; 0..dim) {
 		code ~= "}\n";
 	}
 
+	// Check if the current point should stay active.
 	code ~= "if (active && (neighboursActive < 2 || neighboursActive > 3)) {";
 	code ~= "	newState[DPoint(" ~ xyz ~ ")] = false;";
 	code ~= "} else if (!active && neighboursActive == 3) {";
 	code ~= "	newState[DPoint(" ~ xyz ~ ")] = true;";
 	code ~= "}\n";
 
+	// Generate closing brackers for the outer loop
 	static foreach(j; 0..dim) {
 		code ~= "}\n";
 	}
@@ -184,6 +216,7 @@ int part2(size_t dim)(bool[Point!dim] start){
 		int[dim] min;
 		int[dim] max;
 		foreach(e; prev.byKey) {
+			// Determine the bounds for each dimension
 			static foreach(j; 0..dim) {
 				if (e[j] < min[j]) min[j] = e[j];
 				if (e[j] > max[j]) max[j] = e[j];
@@ -194,7 +227,10 @@ int part2(size_t dim)(bool[Point!dim] start){
 			max[j] += 2;
 		}
 
-		//writeln(GenLoops!(dim));
+		//debug writeln(GenLoops!(dim));
+
+		// Sadly, the only way I am a ware of to generate dim amount of nested loops
+		// is by using mixins
 		mixin(GenLoops!(dim));
 
 		prev = newState;
